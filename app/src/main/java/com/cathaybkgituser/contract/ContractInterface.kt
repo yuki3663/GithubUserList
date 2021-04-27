@@ -1,10 +1,12 @@
 package com.tom.cathaybkgituser.contract
 
+import com.cathaybkgituser.network.UserInfoData
+
 interface ContractInterface {
 
     interface View {
         fun initView()
-        fun updateViewData()
+        fun updateViewData(list :List<UserInfoData>)
     }
 
     interface Presenter {

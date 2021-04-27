@@ -14,7 +14,7 @@ class MainActivityPresenter(_view: View): Presenter {
 
     override fun incrementValue() {
         model.incrementCounter()
-        view.updateViewData()
+        //view.updateViewData()
     }
 
      override fun getCounter() = model.getCounter().toString()

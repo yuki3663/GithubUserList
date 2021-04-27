@@ -1,11 +1,15 @@
 package com.tom.cathaybkgituser.view
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.cathaybkgituser.network.GitHubUsersApi
+import com.cathaybkgituser.network.NetworkManager
+import com.cathaybkgituser.network.UserInfoData
 import com.tom.cathaybkgituser.R
 import com.tom.cathaybkgituser.contract.ContractInterface
 import com.tom.cathaybkgituser.model.UserData
@@ -13,6 +17,9 @@ import com.tom.cathaybkgituser.presenter.MainActivityPresenter
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.user_row.view.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainActivity : AppCompatActivity(), ContractInterface.View {
 
@@ -30,11 +37,26 @@ class MainActivity : AppCompatActivity(), ContractInterface.View {
         clickButton.setOnClickListener { com.tom.presenter?.incrementValue() }*/
         recycler.setHasFixedSize(true)
         recycler.layoutManager = LinearLayoutManager(this)
-        val users = listOf<UserData>(
-                UserData("A","A","A","A","A","A","A"),
-                UserData("A","A","A","A","A","A","A"),
-                UserData("A","A","A","A","A","A","A")
-        )
+        val apiService = NetworkManager.provideRetrofit(NetworkManager.provideOkHttpClient())
+            .create(GitHubUsersApi::class.java)
+
+        apiService.getAllUsers(0).enqueue(object : Callback<List<UserInfoData>> {
+            override fun onResponse(
+                call: Call<List<UserInfoData>>,
+                response: Response<List<UserInfoData>>
+            ) {
+                Log.d("MainActivity", "response: ${response.body().toString()}")
+                response.body()?.let { updateViewData(it) }
+            }
+            override fun onFailure(call: Call<List<UserInfoData>>, t: Throwable) {
+                Log.d("MainActivity", "error: ${t.message}" ?: "Get some error")
+            }
+        })
+
+    }
+
+    override fun updateViewData(dataList: List<UserInfoData>)
+    {
         val adapter = object : RecyclerView.Adapter<UserViewHolder>(){
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder
             {
@@ -44,23 +66,20 @@ class MainActivity : AppCompatActivity(), ContractInterface.View {
 
             override fun getItemCount(): Int
             {
-                return users.size
+                return dataList.size
             }
 
             override fun onBindViewHolder(holder: UserViewHolder, position: Int)
             {
-                holder.name.setText(users.get(position).name)
+                holder.name.setText(dataList.get(position).login)
             }
         }
         recycler.adapter = adapter
     }
 
-    override fun updateViewData() {
-        /*counterTextView.text = com.tom.presenter?.getCounter()*/
-    }
-
     class UserViewHolder(view: View) : RecyclerView.ViewHolder(view)
     {
         val name = view.name
+        val avatarUrl = view.user_head
     }
 }
