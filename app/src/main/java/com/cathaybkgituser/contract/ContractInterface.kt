@@ -6,7 +6,6 @@ interface ContractInterface {
 
     interface View {
         fun initView()
-        fun updateViewData(list :List<UserInfoData>)
     }
 
     interface Presenter {

@@ -15,9 +15,10 @@ data class UserDetailData(
 
     val location: String?,
 
-    @SerializedName("html_url")
-    val link: String,
+    val blog: String,
 
     @SerializedName("site_admin")
-    val siteAdmin: Boolean
+    val siteAdmin: String,
+
+    val bio: String?
 )

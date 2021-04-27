@@ -11,9 +11,6 @@ data class UserInfoData(
     @SerializedName("avatar_url")
     val avatarUrl: String,
 
-    @SerializedName("html_url")
-    val link: String,
-
     @SerializedName("site_admin")
-    val siteAdmin: Boolean
+    val siteAdmin: String
 )
